@@ -54,42 +54,56 @@
       padding: 0.3rem 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
+    #luckControl {
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
   <h1>🌟 究極ガチャ地獄 🌟</h1>
+  <div id="luckControl">
+    <label for="luckRange">運の値 (Luck): </label>
+    <input type="range" id="luckRange" min="1" max="5" step="0.1" value="1" onchange="setLuck(this.value)">
+    <span id="luckValue">1</span>x
+  </div>
   <button onclick="drawGacha()">ガチャを引く！</button>
   <div id="result"></div>
   <div id="history"></div>
 
   <script>
     const items = [
-      { name: "💩 ゴミ", chance: 55, color: "#ccc" },
-      { name: "⭐ まあまあ", chance: 30, color: "#aaf" },
-      { name: "✨ レア！", chance: 10, color: "#6ff" },
-      { name: "🌈 超激レア！！", chance: 4.9, color: "#ff6" },
-      { name: "🔥 神引き（0.1%）", chance: 0.1, color: "#f00" }
+      { name: "💩 ゴミ", weight: 550, color: "#ccc" },
+      { name: "⭐ まあまあ", weight: 300, color: "#aaf" },
+      { name: "✨ レア！", weight: 90, color: "#6ff" },
+      { name: "🌈 超激レア！！", weight: 49, color: "#ff6" },
+      { name: "🔥 神引き🔥", weight: 1, color: "#f00" }
     ];
 
     let history = [];
+    let luck = 1; // 初期Luck値
+
+    function setLuck(value) {
+      luck = parseFloat(value);
+      document.getElementById("luckValue").textContent = luck;
+    }
 
     function drawGacha() {
-      const rand = Math.random() * 100;
-      let cumulative = 0;
+      const totalWeight = items.reduce((sum, it) => sum + it.weight * luck, 0);
+      let pick = Math.random() * totalWeight;
       let resultItem = items[0];
 
-      for (let item of items) {
-        cumulative += item.chance;
-        if (rand <= cumulative) {
-          resultItem = item;
+      for (let it of items) {
+        const w = it.weight * luck;
+        if (pick < w) {
+          resultItem = it;
           break;
         }
+        pick -= w;
       }
 
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = `<span style="color:${resultItem.color}; font-weight:bold;">${resultItem.name}</span>`;
 
-      // Save history
       history.unshift(resultItem.name);
       if (history.length > 30) history.pop();
 
