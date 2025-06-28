@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>究極ガチャ地獄</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1f1c2c, #928dab);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      font-size: 1.5rem;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff4081;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.1);
+    }
+    #result {
+      margin-top: 2rem;
+      font-size: 2rem;
+      min-height: 2rem;
+      text-shadow: 2px 2px 4px #000;
+    }
+    #history {
+      margin-top: 2rem;
+      max-height: 200px;
+      overflow-y: auto;
+      width: 80%;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1rem;
+      border-radius: 10px;
+    }
+    .history-item {
+      font-size: 1rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <h1>🌟 究極ガチャ地獄 🌟</h1>
+  <button onclick="drawGacha()">ガチャを引く！</button>
+  <div id="result"></div>
+  <div id="history"></div>
+
+  <script>
+    const items = [
+      { name: "💩 ゴミ", chance: 55, color: "#ccc" },
+      { name: "⭐ まあまあ", chance: 30, color: "#aaf" },
+      { name: "✨ レア！", chance: 10, color: "#6ff" },
+      { name: "🌈 超激レア！！", chance: 4.9, color: "#ff6" },
+      { name: "🔥 神引き（0.1%）", chance: 0.1, color: "#f00" }
+    ];
+
+    let history = [];
+
+    function drawGacha() {
+      const rand = Math.random() * 100;
+      let cumulative = 0;
+      let resultItem = items[0];
+
+      for (let item of items) {
+        cumulative += item.chance;
+        if (rand <= cumulative) {
+          resultItem = item;
+          break;
+        }
+      }
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = `<span style="color:${resultItem.color}; font-weight:bold;">${resultItem.name}</span>`;
+
+      // Save history
+      history.unshift(resultItem.name);
+      if (history.length > 30) history.pop();
+
+      const historyDiv = document.getElementById("history");
+      historyDiv.innerHTML = history.map(i => `<div class="history-item">${i}</div>`).join('');
+    }
+  </script>
+</body>
+</html>
